@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import WordCountChart from '@/components/WordCountChart';
+import TitleDetailsChart from '@/components/TitleDetailsChart';
 
 import { AgencyDetails } from '@/types';
 
@@ -59,7 +59,7 @@ export default function ClientDashboard() {
 
       {selectedAgency && (
         <>
-          <WordCountChart agencyDetails={selectedAgency} />
+          <TitleDetailsChart agencyDetails={selectedAgency} />
         </>
       )}
     </main>

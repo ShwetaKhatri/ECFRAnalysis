@@ -132,3 +132,14 @@ export interface WordCountApiResponse {
   agency_slug: string;
   titles: TitleData[];
 }
+export interface HistoricalChange {
+  date: string;
+  amendment_date: string;
+  issue_date: string;
+  identifier: string;
+  name: string;
+  part: string;
+  subpart: string | null;
+  title: string;
+  type: string;
+}
