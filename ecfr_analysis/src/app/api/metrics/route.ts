@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-// import { parseStringPromise } from 'xml2js';
+import { parseStringPromise } from 'xml2js';
 
 type EcfrTitle = {
   number: number;
@@ -52,26 +52,26 @@ async function fetchEcfrTitles(): Promise<EcfrTitle[]> {
 }
 
 // Download XML for a title and count words
-// async function fetchWordCountForTitle(titleNumber: number): Promise<number> {
-//   const url = `https://www.ecfr.gov/api/versioner/v1/full/2025-01-01/title-${titleNumber}.xml`;
-//   try {
-//     const response = await fetch(url);
-//     if (!response.ok) {
-//       console.warn(`Failed to fetch XML for title ${titleNumber}`);
-//       return 0;
-//     }
+async function fetchWordCountForTitle(titleNumber: number): Promise<number> {
+  const url = `https://www.ecfr.gov/api/versioner/v1/full/2025-01-01/title-${titleNumber}.xml`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.warn(`Failed to fetch XML for title ${titleNumber}`);
+      return 0;
+    }
 
-//     const xml = await response.text();
-//     const parsed = await parseStringPromise(xml, { trim: true, explicitArray: false });
-//     const textContent = JSON.stringify(parsed);
-//     const wordCount = textContent.split(/\s+/).length;
-//     console.log(`Word count for title ${titleNumber}: ${wordCount}`);
-//     return wordCount;
-//   } catch (error) {
-//     console.error(`Error processing title ${titleNumber}:`, error);
-//     return 0;
-//   }
-// }
+    const xml = await response.text();
+    const parsed = await parseStringPromise(xml, { trim: true, explicitArray: false });
+    const textContent = JSON.stringify(parsed);
+    const wordCount = textContent.split(/\s+/).length;
+    console.log(`Word count for title ${titleNumber}: ${wordCount}`);
+    return wordCount;
+  } catch (error) {
+    console.error(`Error processing title ${titleNumber}:`, error);
+    return 0;
+  }
+}
 
 // Fetch historical changes for a title
 async function fetchHistoricalChanges(titleNumber: number, date: string): Promise<ContentVersion[]> {
@@ -127,13 +127,13 @@ export async function POST(req: NextRequest) {
       relevantTitles.map(async (title) => {
         // Fetch historical changes for the title on or before the date '2025-01-01'
         const historicalChanges = await fetchHistoricalChanges(title.number, '2025-01-01');
-        
+        const wordCount = await fetchWordCountForTitle(title.number);
         // Construct the matched result with the fetched data
         return {
           titleNumber: title.number,
           titleName: title.name,
-          wordCount: 0, // Placeholder until you fetch the word count (if needed)
-          historicalChanges,  // Attach the historical changes data
+          wordCount: wordCount,
+          historicalChanges,  
         };
       })
     );
