@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-const ECFR_API_URL = 'https://www.ecfr.gov/api/v1/titles'; // eCFR API URL for titles
+const ECFR_API_URL = 'https://www.ecfr.gov/api/versioner/v1/titles.json'; // eCFR API URL for titles
+
 
 /**
  * This route will call the /v1/titles endpoint and return the list of titles to the frontend

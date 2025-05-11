@@ -1,49 +1,67 @@
-// src/components/ClientDashboard.tsx
+// components/ClientDashboard.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
-import { WordCountChart } from '../components/WordCountChart';
-import { HistoryChart } from '../components/HistoryChart';
-import { MetricsTable } from '../components/MetricsTable';
-import { AgencyMetrics } from '../types';
+import WordCountChart from '@/components/WordCountChart';
 
-const mockData: AgencyMetrics[] = [
-  {
-    agency: 'EPA',
-    wordCount: 120000,
-    checksum: 'abcd1234',
-    history: [
-      { date: '2024-01-01', wordCount: 118000 },
-      { date: '2024-06-01', wordCount: 119500 },
-      { date: '2025-01-01', wordCount: 120000 },
-    ],
-    redundancyScore: 78,
-  },
-  {
-    agency: 'FDA',
-    wordCount: 95000,
-    checksum: 'efgh5678',
-    history: [
-      { date: '2024-01-01', wordCount: 94000 },
-      { date: '2024-06-01', wordCount: 94500 },
-      { date: '2025-01-01', wordCount: 95000 },
-    ],
-    redundancyScore: 66,
-  },
-];
+import { AgencyDetails } from '@/types';
 
 export default function ClientDashboard() {
-  const [data, setData] = useState<AgencyMetrics[]>([]);
+  const [agencies, setAgencies] = useState<AgencyDetails[]>([]);
+  const [selectedAgency, setSelectedAgency] = useState<AgencyDetails | null>(null);
 
   useEffect(() => {
-    setData(mockData);
+    async function fetchAgencies() {
+      try {
+        const res = await fetch('/api/agencies');
+        const data = await res.json();
+        setAgencies(data);
+      } catch (error) {
+        console.error('Failed to fetch agencies:', error);
+      }
+    }
+
+    fetchAgencies();
   }, []);
 
+  const handleAgencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedSlug = event.target.value;
+    const agency = agencies.find((a) => a.slug === selectedSlug);
+    if (agency) {
+      setSelectedAgency(agency);
+    }
+  };
+
   return (
-    <>
-      <WordCountChart data={data} />
-      <HistoryChart data={data} />
-      <MetricsTable data={data} />
-    </>
+    <main className="p-4 space-y-6">
+      <h1 className="text-2xl font-bold">eCFR Analysis Dashboard</h1>
+
+      <div className="mb-4">
+        <label htmlFor="agency-select" className="block mb-2 text-lg font-medium">
+          Select an Agency:
+        </label>
+        <select
+          id="agency-select"
+          onChange={handleAgencyChange}
+          className="p-2 border rounded"
+          value={selectedAgency?.slug || ''}
+        >
+          <option value="" disabled>
+            -- Choose an Agency --
+          </option>
+          {agencies.map((agency) => (
+            <option key={agency.slug} value={agency.slug}>
+              {agency.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {selectedAgency && (
+        <>
+          <WordCountChart agencyDetails={selectedAgency} />
+        </>
+      )}
+    </main>
   );
 }
