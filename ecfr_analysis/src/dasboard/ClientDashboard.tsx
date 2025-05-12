@@ -2,9 +2,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import TitleDetailsChart from '@/components/TitleDetailsChart';
+// import TitleDetailsChart from '@/components/TitleDetailsChart';
 
 import { AgencyDetails } from '@/types';
+import AgencyDataAnalysis from '@/components/AgencyDataAnalysis';
 
 export default function ClientDashboard() {
   const [agencies, setAgencies] = useState<AgencyDetails[]>([]);
@@ -59,7 +60,8 @@ export default function ClientDashboard() {
 
       {selectedAgency && (
         <>
-          <TitleDetailsChart agencyDetails={selectedAgency} />
+          {/* <TitleDetailsChart agencyDetails={selectedAgency} /> */}
+          <AgencyDataAnalysis agencyDetails={selectedAgency} />
         </>
       )}
     </main>
